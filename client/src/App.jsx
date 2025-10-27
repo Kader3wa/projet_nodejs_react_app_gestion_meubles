@@ -15,10 +15,16 @@ export default function App() {
   }, []);
 
   return (
-    <div>
-      <h1>Meuble Management Client</h1>
-      {err && <p style={{ color: "red" }}>Error: {err}</p>}
-      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+    <div className="container py-4">
+      <h1 className="h3 mb-3">
+        <i className="bi bi-box-seam"></i> Meuble Management Client
+      </h1>
+      {err && <div className="alert alert-danger">Error: {err}</div>}
+      {data && (
+        <div className="alert alert-success">
+          Message from API: {data.message}
+        </div>
+      )}
     </div>
   );
 }
