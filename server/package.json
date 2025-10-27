@@ -3,7 +3,10 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "db:create": "node tools/db-create.js",
+    "db:import": "node tools/db-import.js schema.sql",
+    "db:seed": "node tools/db-import.js seed.sql"
   },
   "dependencies": {
     "cors": "^2.8.5",
