@@ -1,30 +1,29 @@
-import { useEffect, useState } from "react";
-import { apiHello } from "./Api";
+import { useAuth } from "./hooks/useAuth";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 export default function App() {
-  const [data, setData] = useState(null);
-  const [err, setErr] = useState(null);
+  const { isAuth } = useAuth();
 
-  useEffect(() => {
-    apiHello()
-      .then((data) => {
-        console.log(data);
-        setData(data);
-      })
-      .catch((e) => setErr(e.message));
-  }, []);
+  console.log("isAuth:", isAuth);
 
   return (
-    <div className="container py-4">
-      <h1 className="h3 mb-3">
-        <i className="bi bi-box-seam"></i> Meuble Management Client
-      </h1>
-      {err && <div className="alert alert-danger">Error: {err}</div>}
-      {data && (
-        <div className="alert alert-success">
-          Message from API: {data.message}
-        </div>
-      )}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/login"
+          element={isAuth ? <Navigate to="/dashboard" /> : <Login />}
+        />
+        <Route
+          path="/dashboard"
+          element={isAuth ? <Dashboard /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/"
+          element={<Navigate to={isAuth ? "/dashboard" : "/login"} />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
