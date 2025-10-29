@@ -3,6 +3,7 @@ import { verifyToken } from "../middleware/authMiddleware.js";
 import categoriesRouter from "./private/categories.js";
 import materialsRouter from "./private/materials.js";
 import companiesRouter from "./private/companies.js";
+import furnitureModelsRouter from "./private/furniture_models.js";
 
 const router = Router();
 
@@ -18,9 +19,8 @@ router.get("/protected", verifyToken, (req, res) => {
 });
 
 router.use("/private/categories", verifyToken, categoriesRouter);
-
 router.use("/private/materials", verifyToken, materialsRouter);
-
 router.use("/private/companies", verifyToken, companiesRouter);
+router.use("/private/furniture_models", verifyToken, furnitureModelsRouter);
 
 export default router;
