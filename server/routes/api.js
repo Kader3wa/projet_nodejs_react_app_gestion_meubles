@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { verifyToken } from "../middleware/authMiddleware.js";
+import categoriesRouter from "./private/categories.js";
 
 const router = Router();
 
@@ -13,5 +14,7 @@ router.get("/protected", verifyToken, (req, res) => {
     user: req.user,
   });
 });
+
+router.use("/private/categories", verifyToken, categoriesRouter);
 
 export default router;
