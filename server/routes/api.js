@@ -4,6 +4,7 @@ import categoriesRouter from "./private/categories.js";
 import materialsRouter from "./private/materials.js";
 import companiesRouter from "./private/companies.js";
 import furnitureModelsRouter from "./private/furniture_models.js";
+import buildsRouter from "./private/builds.js";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/private/categories", verifyToken, categoriesRouter);
 router.use("/private/materials", verifyToken, materialsRouter);
 router.use("/private/companies", verifyToken, companiesRouter);
 router.use("/private/furniture_models", verifyToken, furnitureModelsRouter);
+router.use("/private/builds", verifyToken, buildsRouter);
 
 export default router;
