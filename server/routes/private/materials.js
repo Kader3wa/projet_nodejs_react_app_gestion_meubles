@@ -65,7 +65,7 @@ router.post("/", async (req, res) => {
     if (dup.length)
       return res
         .status(409)
-        .json({ error: "matériau déjà existant pour ce fournisseur" });
+        .json({ error: "Matériau déjà existant pour ce fournisseur" });
 
     const [r] = await pool.execute(
       "INSERT INTO materials (name, type, company_id) VALUES (?,?,?)",

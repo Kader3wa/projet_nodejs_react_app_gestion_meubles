@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
     res.status(201).json({ id: r.insertId, name: name.trim() });
   } catch (e) {
     if (e.code === "ER_DUP_ENTRY")
-      return res.status(409).json({ error: "name déjà utilisé" });
+      return res.status(409).json({ error: "Catégorie déjà existante" });
     res.status(500).json({ error: e.message });
   }
 });

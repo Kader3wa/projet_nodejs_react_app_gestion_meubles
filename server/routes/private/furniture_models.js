@@ -60,8 +60,6 @@ router.post("/", async (req, res) => {
 
   try {
     const pool = await getPool();
-
-    // vérif catégorie
     const [[cat]] = await pool.query("SELECT id FROM categories WHERE id = ?", [
       category_id,
     ]);
@@ -95,8 +93,6 @@ router.put("/:id", async (req, res) => {
 
   try {
     const pool = await getPool();
-
-    // existe ?
     const [[exists]] = await pool.query(
       "SELECT id FROM furniture_models WHERE id = ?",
       [req.params.id]

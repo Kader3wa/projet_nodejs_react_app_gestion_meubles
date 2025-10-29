@@ -5,6 +5,7 @@ import materialsRouter from "./private/materials.js";
 import companiesRouter from "./private/companies.js";
 import furnitureModelsRouter from "./private/furniture_models.js";
 import buildsRouter from "./private/builds.js";
+import tagsRouter from "./private/tags.js";
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use("/private/materials", verifyToken, materialsRouter);
 router.use("/private/companies", verifyToken, companiesRouter);
 router.use("/private/furniture_models", verifyToken, furnitureModelsRouter);
 router.use("/private/builds", verifyToken, buildsRouter);
+router.use("/private/tags", verifyToken, tagsRouter);
 
 export default router;
