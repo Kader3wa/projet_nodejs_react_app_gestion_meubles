@@ -3,6 +3,10 @@ import { getPool } from "../../services/db.js";
 
 const router = Router();
 
+/**
+ * GET /api/private/companies
+ * Liste des entreprises
+ */
 router.get("/", async (_req, res) => {
   try {
     const pool = await getPool();
@@ -15,6 +19,10 @@ router.get("/", async (_req, res) => {
   }
 });
 
+/**
+ * POST /api/private/companies
+ * Créer une entreprise
+ */
 router.post("/", async (req, res) => {
   const { name } = req.body || {};
   if (!name?.trim()) return res.status(400).json({ error: "name requis" });

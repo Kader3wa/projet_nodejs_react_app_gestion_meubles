@@ -4,6 +4,10 @@ import { getPool } from "../../services/db.js";
 const router = Router();
 const TYPES = new Set(["Bois", "Fer", "Plastique"]);
 
+/**
+ * GET /api/private/materials
+ * Liste des matériaux avec filtres optionnels
+ */
 router.get("/", async (req, res) => {
   const { type, company_id } = req.query;
   const where = [];
@@ -36,6 +40,10 @@ router.get("/", async (req, res) => {
   }
 });
 
+/**
+ * POST /api/private/materials
+ * Créer un matériau
+ */
 router.post("/", async (req, res) => {
   const { name, type, company_id } = req.body || {};
   if (!name?.trim()) return res.status(400).json({ error: "name requis" });
@@ -71,6 +79,10 @@ router.post("/", async (req, res) => {
   }
 });
 
+/**
+ * GET /api/private/materials/:id
+ * Détail d'un matériau
+ */
 router.get("/:id", async (req, res) => {
   try {
     const pool = await getPool();
@@ -87,6 +99,10 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+/**
+ * PUT /api/private/materials/:id
+ * Modifier un matériau
+ */
 router.put("/:id", async (req, res) => {
   const { name, type, company_id } = req.body || {};
   if (type && !TYPES.has(type))
@@ -141,6 +157,10 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+/**
+ * DELETE /api/private/materials/:id
+ * Supprimer un matériau
+ */
 router.delete("/:id", async (req, res) => {
   try {
     const pool = await getPool();

@@ -50,7 +50,7 @@ router.get("/:id", async (req, res) => {
 
 /**
  * POST /api/private/furniture_models
- * body: { name, description?, category_id }
+ * Créer un modèle de meuble
  */
 router.post("/", async (req, res) => {
   const { name, description = null, category_id } = req.body || {};
@@ -84,7 +84,7 @@ router.post("/", async (req, res) => {
 
 /**
  * PUT /api/private/furniture_models/:id
- * body: { name?, description?, category_id? }
+ * Modifier un modèle de meuble
  */
 router.put("/:id", async (req, res) => {
   const { name, description, category_id } = req.body || {};
@@ -103,7 +103,6 @@ router.put("/:id", async (req, res) => {
     );
     if (!exists) return res.status(404).json({ error: "not_found" });
 
-    // vérif catégorie si fournie
     if (category_id !== undefined) {
       const [[cat]] = await pool.query(
         "SELECT id FROM categories WHERE id = ?",
@@ -112,7 +111,6 @@ router.put("/:id", async (req, res) => {
       if (!cat) return res.status(400).json({ error: "category_id inconnu" });
     }
 
-    // build update dynamique
     const fields = [];
     const params = [];
     if (name !== undefined) {
@@ -144,7 +142,7 @@ router.put("/:id", async (req, res) => {
 
 /**
  * DELETE /api/private/furniture_models/:id
- * Cascade sur builds et furniture_tags via FK
+ * Supprimer un modèle de meuble
  */
 router.delete("/:id", async (req, res) => {
   try {

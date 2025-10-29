@@ -3,6 +3,10 @@ import { getPool } from "../../services/db.js";
 
 const router = Router();
 
+/**
+ * GET /api/private/categories
+ * Liste des catégories
+ */
 router.get("/", async (_req, res) => {
   try {
     const pool = await getPool();
@@ -15,6 +19,10 @@ router.get("/", async (_req, res) => {
   }
 });
 
+/**
+ * POST /api/private/categories
+ * Créer une catégorie
+ */
 router.post("/", async (req, res) => {
   const { name } = req.body || {};
   if (!name?.trim()) return res.status(400).json({ error: "name requis" });
@@ -31,6 +39,10 @@ router.post("/", async (req, res) => {
   }
 });
 
+/**
+ * PUT /api/private/categories/:id
+ * Modifier une catégorie
+ */
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { name } = req.body || {};
@@ -51,6 +63,10 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+/**
+ * DELETE /api/private/categories/:id
+ * Supprimer une catégorie
+ */
 router.delete("/:id", async (req, res) => {
   try {
     const pool = await getPool();
