@@ -1,0 +1,17 @@
+$body-bg: #f7f5f2;
+$body-color: #2f2f2d;
+
+$primary: #8c6a4a;
+$secondary: #3c3c3b;
+$success: #5a8f6b;
+$warning: #c49f4e;
+$danger: #b3544f;
+$info: #d9cbb8;
+
+$link-color: $primary;
+$navbar-dark-bg: $secondary;
+
+$border-radius: 0.35rem;
+$card-border-radius: 0.35rem;
+
+@import "bootstrap/scss/bootstrap";

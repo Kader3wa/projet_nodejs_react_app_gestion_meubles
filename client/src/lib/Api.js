@@ -1,19 +1,24 @@
-const API = "/api";
+import axios from "axios";
 
-export async function login(email, password) {
-  const r = await fetch(`${API}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!r.ok) throw new Error("Erreur d'authentification");
-  return r.json();
-}
+const api = axios.create({
+  baseURL: "/api",
+});
 
-export async function getProtected(token) {
-  const r = await fetch(`${API}/protected`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!r.ok) throw new Error("Accès refusé");
-  return r.json();
-}
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+api.interceptors.response.use(
+  (r) => r,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return Promise.reject(err);
+  }
+);
+
+export default api;

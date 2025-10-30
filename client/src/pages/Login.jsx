@@ -2,18 +2,20 @@ import { useState } from "react";
 import { Form, Button, Container, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../hooks/useAuth";
 import { BoxArrowInRight, EnvelopeOpen, Lock } from "react-bootstrap-icons"; // icône login
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const { handleLogin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const submit = async (e) => {
     e.preventDefault();
     try {
       await handleLogin(email, password);
-      window.location.href = "/dashboard";
+      navigate("/");
     } catch {
       setError("Identifiants invalides");
     }
