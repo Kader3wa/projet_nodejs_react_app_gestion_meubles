@@ -16,7 +16,7 @@ export default function ToastHost({ children }) {
   return (
     <ToastContext.Provider value={show}>
       {children}
-      <ToastContainer position="top-end" className="p-3">
+      <ToastContainer position="top-center" className="p-3">
         {toasts.map((t) => (
           <Toast
             key={t.id}
