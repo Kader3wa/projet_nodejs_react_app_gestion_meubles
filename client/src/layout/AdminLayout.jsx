@@ -4,6 +4,7 @@ import { Container, Navbar, Nav } from "react-bootstrap";
 import {
   Compass,
   House,
+  ListTask,
   Lock,
   Tools,
   WindowDesktop,
@@ -32,6 +33,10 @@ export default function AdminLayout() {
             <Nav.Link as={Link} to="/materials">
               <Tools className="mb-1 me-2" />
               Matériaux
+            </Nav.Link>
+            <Nav.Link as={Link} to="/categories">
+              <ListTask className="mb-1 me-2" />
+              Catégories
             </Nav.Link>
             <Nav.Link onClick={handleLogout}>
               <Lock className="mb-1 me-2" />

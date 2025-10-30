@@ -1,20 +1,43 @@
 import { useEffect, useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
-import DataTable from "../components/DataTable";
 import api from "../lib/Api";
+import DataTable from "../components/DataTable";
 import { useToast } from "../context/ToastContext";
 import { PlusCircle } from "react-bootstrap-icons";
 
-export default function Companies() {
+export default function Categories() {
   const toast = useToast();
   const [rows, setRows] = useState([]);
   const [show, setShow] = useState(false);
   const [draft, setDraft] = useState({ id: null, name: "" });
 
   const load = async () => {
-    const { data } = await api.get("/private/companies");
-    setRows(data);
+    const { data } = await api.get("/private/categories");
+    setRows(
+      data.map((r) => ({
+        ...r,
+        actions: (
+          <>
+            <Button
+              size="sm"
+              variant="outline-primary"
+              onClick={() => openEdit(r)}
+            >
+              Éditer
+            </Button>{" "}
+            <Button
+              size="sm"
+              variant="outline-danger"
+              onClick={() => removeOne(r.id)}
+            >
+              Suppr.
+            </Button>
+          </>
+        ),
+      }))
+    );
   };
+
   useEffect(() => {
     load();
   }, []);
@@ -32,51 +55,42 @@ export default function Companies() {
     e.preventDefault();
     if (!draft.name.trim()) return;
     if (draft.id == null)
-      await api.post("/private/companies", { name: draft.name });
-    else await api.put(`/private/companies/${draft.id}`, { name: draft.name });
+      await api.post("/private/categories", { name: draft.name.trim() });
+    else
+      await api.put(`/private/categories/${draft.id}`, {
+        name: draft.name.trim(),
+      });
     setShow(false);
     toast("Enregistré");
     load();
   };
-  const remove = async (id) => {
-    if (!confirm("Supprimer ?")) return;
-    await api.delete(`/private/companies/${id}`);
-    toast("Supprimé");
+
+  const removeOne = async (id) => {
+    if (!confirm("Supprimer cette catégorie ?")) return;
+    await api.delete(`/private/categories/${id}`);
+    toast("Supprimé", "danger");
     load();
   };
 
   const columns = [{ key: "name", label: "Nom" }];
-  const enriched = rows.map((r) => ({
-    ...r,
-    actions: (
-      <>
-        <Button size="sm" variant="outline-primary" onClick={() => openEdit(r)}>
-          Éditer
-        </Button>{" "}
-        <Button size="sm" variant="outline-danger" onClick={() => remove(r.id)}>
-          Suppr.
-        </Button>
-      </>
-    ),
-  }));
 
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="h5 mb-0">Entreprises</h2>
+        <h2 className="h5 mb-0">Catégories</h2>
         <Button onClick={openCreate}>
           <PlusCircle className="mb-1 me-2" />
-          Nouveau
+          Ajouter
         </Button>
       </div>
 
-      <DataTable columns={columns} rows={enriched} pageSize={10} />
+      <DataTable columns={columns} rows={rows} pageSize={10} />
 
       <Modal show={show} onHide={() => setShow(false)}>
         <Form onSubmit={save}>
           <Modal.Header closeButton>
             <Modal.Title>
-              {draft.id ? "Modifier entreprise" : "Ajouter entreprise"}
+              {draft.id ? "Modifier cette catégorie" : "Ajouter une catégorie"}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>

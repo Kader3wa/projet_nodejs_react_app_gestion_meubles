@@ -6,6 +6,7 @@ import Dashboard from "../pages/Dashboard";
 import AdminLayout from "../layout/AdminLayout";
 import Companies from "../pages/Companies";
 import Materials from "../pages/Materials";
+import Categories from "../pages/Categories";
 
 PrivateRoute.propTypes = {
   children: PropTypes.node.isRequired,
@@ -33,6 +34,7 @@ export default function AppRouter() {
           <Route index element={<Dashboard />} />
           <Route path="companies" element={<Companies />} />
           <Route path="materials" element={<Materials />} />
+          <Route path="categories" element={<Categories />} />
         </Route>
       </Routes>
     </BrowserRouter>

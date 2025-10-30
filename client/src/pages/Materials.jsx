@@ -3,6 +3,7 @@ import { Button, Modal, Form, Row, Col } from "react-bootstrap";
 import api from "../lib/Api";
 import DataTable from "../components/DataTable";
 import { useToast } from "../context/ToastContext";
+import { PlusCircle } from "react-bootstrap-icons";
 
 const TYPES = ["Bois", "Fer", "Plastique"];
 
@@ -108,7 +109,10 @@ export default function Materials() {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2 className="h5 mb-0">Matériaux</h2>
-        <Button onClick={openCreate}>Nouveau</Button>
+        <Button onClick={openCreate}>
+          <PlusCircle className="mb-1 me-2" />
+          Nouveau
+        </Button>
       </div>
 
       <DataTable columns={columns} rows={rows} pageSize={10} />
@@ -116,7 +120,9 @@ export default function Materials() {
       <Modal show={show} onHide={() => setShow(false)}>
         <Form onSubmit={save}>
           <Modal.Header closeButton>
-            <Modal.Title>{draft.id ? "Modifier" : "Créer"}</Modal.Title>
+            <Modal.Title>
+              {draft.id ? "Modifier ce matériau" : "Ajouter un matériau"}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row className="g-3">
