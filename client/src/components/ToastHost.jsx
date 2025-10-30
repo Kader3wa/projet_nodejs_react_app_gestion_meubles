@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Toast, ToastContainer } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { ToastContext } from "../context/ToastContext";
+import { CheckCircleFill } from "react-bootstrap-icons";
 
 ToastHost.propTypes = {
   children: PropTypes.node.isRequired,
@@ -16,7 +17,7 @@ export default function ToastHost({ children }) {
   return (
     <ToastContext.Provider value={show}>
       {children}
-      <ToastContainer position="top-center" className="p-3">
+      <ToastContainer position="bottom-center" className="p-3">
         {toasts.map((t) => (
           <Toast
             key={t.id}
@@ -25,7 +26,10 @@ export default function ToastHost({ children }) {
             delay={2500}
             autohide
           >
-            <Toast.Body className="text-white">{t.msg}</Toast.Body>
+            <Toast.Body className="text-white">
+              <CheckCircleFill className="me-2 mb-1" />
+              {t.msg}
+            </Toast.Body>
           </Toast>
         ))}
       </ToastContainer>

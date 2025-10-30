@@ -1,7 +1,13 @@
 import { Outlet, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { Container, Navbar, Nav } from "react-bootstrap";
-import { Compass, House, Lock, WindowDesktop } from "react-bootstrap-icons";
+import {
+  Compass,
+  House,
+  Lock,
+  Tools,
+  WindowDesktop,
+} from "react-bootstrap-icons";
 
 export default function AdminLayout() {
   const { handleLogout } = useAuth();
@@ -22,6 +28,10 @@ export default function AdminLayout() {
             <Nav.Link as={Link} to="/companies">
               <Compass className="mb-1 me-2" />
               Entreprises
+            </Nav.Link>
+            <Nav.Link as={Link} to="/materials">
+              <Tools className="mb-1 me-2" />
+              Matériaux
             </Nav.Link>
             <Nav.Link onClick={handleLogout}>
               <Lock className="mb-1 me-2" />
