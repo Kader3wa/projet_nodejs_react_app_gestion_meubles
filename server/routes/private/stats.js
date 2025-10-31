@@ -29,15 +29,19 @@ router.get("/global", async (_req, res) => {
  */
 router.get("/materials/top", async (req, res) => {
   try {
-    const limit = Number(req.query.limit ?? 7); // 7 matières dans l’énoncé
+    const limit = Number(req.query.limit ?? 7);
     const pool = await getPool();
     const [rows] = await pool.query(
       `
-      SELECT mat.name, mat.type, SUM(bm.quantity) AS total_qty
-      FROM build_materials bm
-      JOIN materials mat ON mat.id = bm.material_id
+      SELECT 
+        mat.name,
+        mat.type,
+        COALESCE(SUM(CASE WHEN bm.quantity > 0 THEN bm.quantity END), 0) AS total_qty,
+        COUNT(bm.material_id) AS usage_count
+      FROM materials mat
+      LEFT JOIN build_materials bm ON bm.material_id = mat.id
       GROUP BY mat.id
-      ORDER BY total_qty DESC
+      ORDER BY total_qty DESC, usage_count DESC
       LIMIT ?
     `,
       [limit]
@@ -56,12 +60,15 @@ router.get("/companies", async (_req, res) => {
   try {
     const pool = await getPool();
     const [rows] = await pool.query(`
-      SELECT comp.name AS company, SUM(bm.quantity) AS total_qty
-      FROM build_materials bm
-      JOIN materials mat ON mat.id = bm.material_id
-      JOIN companies comp ON comp.id = mat.company_id
+      SELECT 
+        comp.name AS company,
+        COALESCE(SUM(CASE WHEN bm.quantity > 0 THEN bm.quantity END), 0) AS total_qty,
+        COUNT(bm.material_id) AS usage_count
+      FROM companies comp
+      LEFT JOIN materials mat ON mat.company_id = comp.id
+      LEFT JOIN build_materials bm ON bm.material_id = mat.id
       GROUP BY comp.id
-      ORDER BY total_qty DESC
+      ORDER BY total_qty DESC, usage_count DESC
     `);
     res.json(rows);
   } catch (e) {
@@ -80,7 +87,7 @@ router.get("/categories", async (_req, res) => {
       SELECT c.name AS category, COUNT(b.id) AS build_count
       FROM categories c
       LEFT JOIN furniture_models m ON m.category_id = c.id
-      LEFT JOIN builds b ON b.model_id = m.id
+      LEFT JOIN builds b ON b.furniture_model_id = m.id
       GROUP BY c.id
       ORDER BY build_count DESC
     `);

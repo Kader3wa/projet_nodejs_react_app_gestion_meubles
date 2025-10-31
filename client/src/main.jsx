@@ -6,6 +6,7 @@ import "./assets/scss/styles.scss";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import ToastHost from "./components/ToastHost.jsx";
+import "./chartSetup";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
