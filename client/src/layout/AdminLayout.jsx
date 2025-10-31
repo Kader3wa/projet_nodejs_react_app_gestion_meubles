@@ -42,6 +42,10 @@ export default function AdminLayout() {
               <ListTask className="mb-1 me-2" />
               Modèles de meubles
             </Nav.Link>
+            <Nav.Link as={Link} to="/builds">
+              <ListTask className="mb-1 me-2" />
+              Réalisations
+            </Nav.Link>
             <Nav.Link onClick={handleLogout}>
               <Lock className="mb-1 me-2" />
               Déconnexion
