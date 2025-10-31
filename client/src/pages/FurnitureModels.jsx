@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import api from "../lib/Api";
 import DataTable from "../components/DataTable";
 import { useToast } from "../context/ToastContext";
 
 export default function FurnitureModels() {
   const toast = useToast();
+  const navigate = useNavigate();
+
   const [rows, setRows] = useState([]);
   const [cats, setCats] = useState([]);
+  const [allTags, setAllTags] = useState([]);
   const [show, setShow] = useState(false);
   const [draft, setDraft] = useState({
     id: null,
@@ -15,14 +19,31 @@ export default function FurnitureModels() {
     description: "",
     category_id: "",
   });
+  const [selectedTagIds, setSelectedTagIds] = useState([]);
 
   const load = async () => {
-    const [{ data: models }, { data: categories }] = await Promise.all([
-      api.get("/private/furniture_models"),
-      api.get("/private/categories"),
-    ]);
+    const [{ data: models }, { data: categories }, { data: tags }] =
+      await Promise.all([
+        api.get("/private/furniture_models"),
+        api.get("/private/categories"),
+        api.get("/private/tags"),
+      ]);
+
+    const withTags = await Promise.all(
+      models.map(async (m) => {
+        try {
+          const { data: t } = await api.get(
+            `/private/furniture_models/${m.id}/tags`
+          );
+          return { ...m, tags: t };
+        } catch {
+          return { ...m, tags: [] };
+        }
+      })
+    );
+
     setRows(
-      models.map((m) => ({
+      withTags.map((m) => ({
         ...m,
         actions: (
           <>
@@ -45,6 +66,7 @@ export default function FurnitureModels() {
       }))
     );
     setCats(categories);
+    setAllTags(tags);
   };
 
   useEffect(() => {
@@ -53,28 +75,51 @@ export default function FurnitureModels() {
 
   const openCreate = () => {
     setDraft({ id: null, name: "", description: "", category_id: "" });
+    setSelectedTagIds([]);
     setShow(true);
   };
-  const openEdit = (m) => {
+
+  const openEdit = async (m) => {
     setDraft({
       id: m.id,
       name: m.name,
       description: m.description ?? "",
       category_id: m.category_id,
     });
+
+    try {
+      const { data } = await api.get(`/private/furniture_models/${m.id}/tags`);
+      setSelectedTagIds(data.map((t) => t.id));
+    } catch {
+      setSelectedTagIds([]);
+    }
     setShow(true);
   };
 
   const save = async (e) => {
     e.preventDefault();
     if (!draft.name.trim() || !draft.category_id) return;
+
     const payload = {
       name: draft.name.trim(),
       description: draft.description || null,
       category_id: Number(draft.category_id),
     };
-    if (draft.id == null) await api.post("/private/furniture_models", payload);
-    else await api.put(`/private/furniture_models/${draft.id}`, payload);
+
+    let id = draft.id;
+    if (id == null) {
+      const { data } = await api.post("/private/furniture_models", payload);
+      id = data.id;
+    } else {
+      await api.put(`/private/furniture_models/${id}`, payload);
+    }
+
+    if (id != null) {
+      await api.put(`/private/furniture_models/${id}/tags`, {
+        tag_ids: selectedTagIds,
+      });
+    }
+
     setShow(false);
     toast("Enregistré");
     load();
@@ -87,11 +132,48 @@ export default function FurnitureModels() {
     load();
   };
 
-  const columns = [
-    { key: "name", label: "Nom" },
-    { key: "category_name", label: "Catégorie" },
-    { key: "builds_count", label: "Réalisations" },
-  ];
+  const columns = useMemo(
+    () => [
+      { key: "name", label: "Nom" },
+      { key: "category_name", label: "Catégorie" },
+      { key: "builds_count", label: "Réalisations" },
+      {
+        key: "tags",
+        label: "Tags",
+        render: (_v, r) => (
+          <span>
+            {(r.tags || []).map((t) => (
+              <span
+                key={t.id}
+                className="badge rounded-pill text-bg-secondary me-1"
+                role="button"
+                onClick={async () => {
+                  try {
+                    const { data: mats } = await api.get(
+                      `/private/tags/${t.id}/materials`
+                    );
+                    if (mats.length === 1)
+                      return navigate(`/materials/${mats[0].id}`);
+                    if (mats.length === 0)
+                      return toast(
+                        "Ce tag n'est lié à aucune matière",
+                        "warning"
+                      );
+                    navigate(`/materials/${mats[0].id}`);
+                  } catch {
+                    toast("Impossible d'ouvrir la matière", "danger");
+                  }
+                }}
+              >
+                {t.label}
+              </span>
+            ))}
+          </span>
+        ),
+      },
+    ],
+    [navigate, toast]
+  );
 
   return (
     <div>
@@ -116,6 +198,7 @@ export default function FurnitureModels() {
                 required
               />
             </Form.Group>
+
             <Form.Group className="mb-3">
               <Form.Label>Catégorie</Form.Label>
               <Form.Select
@@ -133,6 +216,30 @@ export default function FurnitureModels() {
                 ))}
               </Form.Select>
             </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Tags (mots-clés)</Form.Label>
+              <Form.Select
+                multiple
+                value={selectedTagIds}
+                onChange={(e) => {
+                  const ids = Array.from(e.target.selectedOptions).map((o) =>
+                    Number(o.value)
+                  );
+                  setSelectedTagIds(ids);
+                }}
+              >
+                {allTags.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.label}
+                  </option>
+                ))}
+              </Form.Select>
+              <div className="form-text">
+                Associe 1…n tags au modèle (les tags sont liés à des matières).
+              </div>
+            </Form.Group>
+
             <Form.Group>
               <Form.Label>Description</Form.Label>
               <Form.Control

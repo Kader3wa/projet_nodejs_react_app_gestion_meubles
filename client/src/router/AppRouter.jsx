@@ -9,6 +9,7 @@ import Materials from "../pages/Materials";
 import Categories from "../pages/Categories";
 import FurnitureModels from "../pages/FurnitureModels";
 import Builds from "../pages/Builds";
+import Tags from "../pages/Tags";
 
 PrivateRoute.propTypes = {
   children: PropTypes.node.isRequired,
@@ -39,6 +40,7 @@ export default function AppRouter() {
           <Route path="categories" element={<Categories />} />
           <Route path="furniture-models" element={<FurnitureModels />} />
           <Route path="builds" element={<Builds />} />
+          <Route path="tags" element={<Tags />} />
         </Route>
       </Routes>
     </BrowserRouter>

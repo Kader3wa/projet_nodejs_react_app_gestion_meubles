@@ -40,11 +40,15 @@ export default function AdminLayout() {
             </Nav.Link>
             <Nav.Link as={Link} to="/furniture-models">
               <ListTask className="mb-1 me-2" />
-              Modèles de meubles
+              Modèles
             </Nav.Link>
             <Nav.Link as={Link} to="/builds">
               <ListTask className="mb-1 me-2" />
               Réalisations
+            </Nav.Link>
+            <Nav.Link as={Link} to="/tags">
+              <ListTask className="mb-1 me-2" />
+              Tags
             </Nav.Link>
             <Nav.Link onClick={handleLogout}>
               <Lock className="mb-1 me-2" />

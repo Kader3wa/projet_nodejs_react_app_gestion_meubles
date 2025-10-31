@@ -1,3 +1,4 @@
+-- Active: 1747144613941@@127.0.0.1@3306@mysql
 -- -----------------------------------------------------
 --  Base de données : Meubles
 --  Description : structure minimale pour la persistance
@@ -106,4 +107,15 @@ CREATE TABLE furniture_tags (
   CONSTRAINT fk_ft_tag FOREIGN KEY (tag_id)
     REFERENCES tags(id)
     ON DELETE CASCADE
+);
+
+-- -----------------------------------------------------
+-- Table: tag_materials (liaison tags ↔ matières)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS tag_materials (
+  tag_id INT NOT NULL,
+  material_id INT NOT NULL,
+  PRIMARY KEY (tag_id, material_id),
+  CONSTRAINT fk_tm_tag FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
+  CONSTRAINT fk_tm_material FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE
 );

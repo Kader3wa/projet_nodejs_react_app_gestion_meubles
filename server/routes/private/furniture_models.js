@@ -27,22 +27,47 @@ router.get("/", async (_req, res) => {
 });
 
 /**
- * GET /api/private/furniture_models/:id
- * Détail + catégorie
+ * GET /api/private/furniture_models/:id/tags
+ * Récupérer les tags associés à un modèle de meuble
  */
-router.get("/:id", async (req, res) => {
+router.get("/:id/tags", async (req, res) => {
   try {
     const pool = await getPool();
-    const [[row]] = await pool.query(
-      `SELECT m.id, m.name, m.description,
-              c.id AS category_id, c.name AS category_name
-       FROM furniture_models m
-       JOIN categories c ON c.id = m.category_id
-       WHERE m.id = ?`,
+    const [rows] = await pool.query(
+      `SELECT t.id, t.label
+       FROM furniture_tags ft
+       JOIN tags t ON t.id = ft.tag_id
+       WHERE ft.furniture_model_id = ? ORDER BY t.label ASC`,
       [req.params.id]
     );
-    if (!row) return res.status(404).json({ error: "not_found" });
-    res.json(row);
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * PUT /api/private/furniture_models/:id/tags
+ * Associer des tags à un modèle de meuble
+ */
+router.put("/:id/tags", async (req, res) => {
+  const { tag_ids } = req.body || {};
+  if (!Array.isArray(tag_ids))
+    return res.status(400).json({ error: "tag_ids[] requis" });
+  try {
+    const pool = await getPool();
+    await pool.execute(
+      "DELETE FROM furniture_tags WHERE furniture_model_id = ?",
+      [req.params.id]
+    );
+    if (tag_ids.length) {
+      const values = tag_ids.map((tid) => [req.params.id, tid]);
+      await pool.query(
+        "INSERT INTO furniture_tags (furniture_model_id, tag_id) VALUES ?",
+        [values]
+      );
+    }
+    res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
